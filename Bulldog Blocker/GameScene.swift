@@ -18,7 +18,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var inactiveBlockers: [SKSpriteNode] = [SKSpriteNode]()
     var activeBlockers: [SKSpriteNode] = [SKSpriteNode]()
     var hoop = SKSpriteNode()
+    var scoreLabel = SKLabelNode()
     
+    var score = 0 {
+        didSet {
+            scoreLabel.text = "Score: \(score)"
+        }
+    }
+    
+    var timer: Timer? = nil
+    
+    
+    enum NodeCategory: UInt32 {
+        case basketball = 1
+        case blocker = 2
+        case hoop = 4
+    }
+    
+    // setup the game scene
     func setup(){
         print("setup")
         physicsWorld.gravity = .zero
@@ -27,78 +44,123 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         hoop.physicsBody = SKPhysicsBody(rectangleOf: hoop.size)
         hoop.physicsBody?.isDynamic = false
         hoop.physicsBody!.contactTestBitMask = UInt32(1)
-        addBall()
-        addBlock()
+
+        scoreLabel.fontSize = 50
+        scoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 10)
+        score = 0
+        addChild(scoreLabel)
         
         
-        
+    }
+    
+    // setup the timer for which will spawn the balls and the blockers
+    func setupTimer(){
+        timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { (timer) in
+            self.addBall()
+            self.addBlock()
+        })
     }
     
     // runs when the scene is displayed
     override func didMove(to view: SKView) {
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         setup()
+        startGame()
         //addBall()
         //addBlock()
         //addBall()
         // game loop
-        run(SKAction.repeatForever(
-            SKAction.sequence([
-                SKAction.run(moveBalls),
-                //SKAction.run(addBall),
-                SKAction.run(moveEnemies),
-                                SKAction.wait(forDuration: 0.01)])))
+//        run(SKAction.repeatForever(
+//            SKAction.sequence([
+//                SKAction.run(moveBalls),
+//                //SKAction.run(addBall),
+//                SKAction.run(moveEnemies),
+//                                SKAction.wait(forDuration: 0.01)])))
+    }
+    
+    func startGame(){
+        isPaused = false
+        setupTimer()
+    }
+    
+    func gameOver(){
+        
     }
     
     // add a new ball to the scene
     func addBall(){
+        // animate the ball to rise up the screen
+        let moveUp = SKAction.move(to: CGPoint(x: self.frame.midX, y: self.frame.maxY), duration: 2)
+        let rotateBall = SKAction.rotate(byAngle: 2 * CGFloat.pi, duration: 1)
+        let rotateForever = SKAction.repeatForever(rotateBall)
+        // if there is no ball to reuse, make a new one
+        let newBall = getBall()
+        newBall.position.x = self.frame.midX
+        newBall.position.y = self.frame.minY - ball.size.height / 2
+        newBall.run(moveUp)
+        newBall.run(rotateForever)
+        
+        addChild(newBall)
+    }
+    
+    // add a new blocker to the scene
+    func addBlock() {
+        let newBlocker = getBlocker()
+        // TODO: make blocker postition random
+        newBlocker.position.x = -250.0
+        newBlocker.position.y = 200.0
+        let moveBlocker = SKAction.move(to: CGPoint(x: -(newBlocker.position.x), y: -(newBlocker.position.y)), duration: 2)
+        let removeBlocker = SKAction.removeFromParent()
+        let flyAnimation = SKAction.sequence([moveBlocker, removeBlocker])
+        newBlocker.run(flyAnimation)
+        
+        addChild(newBlocker)
+    }
+    
+    //
+    func getBall() -> SKSpriteNode{
         // if there is no ball to reuse, make a new one
         if inactiveBalls.count == 0{
-            //let ball = SKSpriteNode(imageNamed: "basketball")
+            let ball = SKSpriteNode(imageNamed: "basketball")
             ball.size.height = 50.0
             ball.size.width = 50.0
             ball.name = "ball"
-            ball.position.x = 0.0
-            ball.position.y = -260.0
-            ball.physicsBody = SKPhysicsBody(rectangleOf: ball.size)
+            ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2)
             ball.physicsBody?.isDynamic = false
             ball.physicsBody!.contactTestBitMask = UInt32(2)
             block.physicsBody?.collisionBitMask = UInt32(2)
-            activeBalls.append(ball)
-            self.addChild(ball)
+            
+            return ball
         } else{
             // reuse the balls from the inactive ball array
             if let ball = inactiveBalls.popLast(){
-                ball.position.x = 0.0
-                ball.position.y = -240.0
+                return ball
             }
-            
         }
+        return ball
     }
     
-    func addBlock() {
+    //
+    func getBlocker() -> SKSpriteNode{
         // if there is no ball to reuse, make a new one
         if inactiveBlockers.count == 0{
-            //let ball = SKSpriteNode(imageNamed: "basketball")
+            let block = SKSpriteNode(imageNamed: "blocker")
             block.size.height = 50.0
             block.size.width = 50.0
             block.name = "block"
-            block.position.x = -250.0
-            block.position.y = 200.0
-            block.physicsBody = SKPhysicsBody(circleOfRadius: block.size.width/2)
+            block.physicsBody = SKPhysicsBody(circleOfRadius: block.size.width / 2)
             block.physicsBody?.isDynamic = true
             block.physicsBody!.contactTestBitMask = UInt32(2)
             block.physicsBody?.collisionBitMask = UInt32(2)
-            activeBlockers.append(block)
-            self.addChild(block)
+            return block
         } else{
-            // reuse the balls from the inactive ball array
+            // reuse the blockers from the inactive blocker array
             if let blocker = inactiveBlockers.popLast(){
-                blocker.position.x = 100.0
-                blocker.position.y = 100.0
+                return blocker
             }
             
         }
+        return block
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
@@ -195,10 +257,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
 
         }
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
     }
     
     
