@@ -55,7 +55,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // setup the timer for which will spawn the balls and the blockers
     func setupTimer(){
-        timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { (timer) in
+        timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { (timer) in
             self.addBall()
             self.addBlock()
         })
@@ -101,8 +101,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func addBlock() {
         let newBlocker = getBlocker()
         // TODO: make blocker postition random
+        let minRandY = Int(self.frame.minY + 100)
+        let maxRandY = Int(self.frame.maxY - 100)
+        let randY = CGFloat(Int.random(in: minRandY...maxRandY))
         newBlocker.position.x = -250.0
-        newBlocker.position.y = 200.0
+        newBlocker.position.y = randY
         let moveBlocker = SKAction.move(to: CGPoint(x: -(newBlocker.position.x), y: -(newBlocker.position.y)), duration: 2)
         let removeBlocker = SKAction.removeFromParent()
         let flyAnimation = SKAction.sequence([moveBlocker, removeBlocker])
