@@ -17,6 +17,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var block: SKSpriteNode = SKSpriteNode(imageNamed: "blocker")
     var inactiveBlockers: [SKSpriteNode] = [SKSpriteNode]()
     var activeBlockers: [SKSpriteNode] = [SKSpriteNode]()
+    
+    var background = SKSpriteNode()
     var hoop = SKSpriteNode()
     var scoreLabel = SKLabelNode()
     
@@ -40,10 +42,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("setup")
         physicsWorld.gravity = .zero
         physicsWorld.contactDelegate = self
-        hoop = self.childNode(withName: "hoop") as! SKSpriteNode
+        
+        hoop = SKSpriteNode(imageNamed: "hoop")
+        hoop.position = CGPoint(x: self.frame.midX, y: 205.0)
+        hoop.size = CGSize(width: 75.0, height: 90.0)
         hoop.physicsBody = SKPhysicsBody(rectangleOf: hoop.size)
         hoop.physicsBody?.isDynamic = false
-        hoop.physicsBody!.contactTestBitMask = UInt32(1)
+        hoop.physicsBody?.categoryBitMask = NodeCategory.hoop.rawValue
+        hoop.physicsBody?.contactTestBitMask = NodeCategory.basketball.rawValue
+        addChild(hoop)
+        
+        background = SKSpriteNode(imageNamed: "court")
+        background.zRotation = CGFloat.pi / 2
+        background.zPosition = -1
+        background.size = CGSize(width: self.frame.height, height: self.frame.width)
+        addChild(background)
 
         scoreLabel.fontSize = 30
         scoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 25)
@@ -87,13 +100,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let moveUp = SKAction.move(to: CGPoint(x: self.frame.midX, y: self.frame.maxY), duration: 2)
         let rotateBall = SKAction.rotate(byAngle: 2 * CGFloat.pi, duration: 1)
         let rotateForever = SKAction.repeatForever(rotateBall)
-        // if there is no ball to reuse, make a new one
+        
         let newBall = getBall()
         newBall.position.x = self.frame.midX
         newBall.position.y = self.frame.minY - ball.size.height / 2
         newBall.run(moveUp)
         newBall.run(rotateForever)
         
+        activeBalls.append(newBall)
         addChild(newBall)
     }
     
@@ -106,11 +120,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let randY = CGFloat(Int.random(in: minRandY...maxRandY))
         newBlocker.position.x = -250.0
         newBlocker.position.y = randY
+        // create and run the blocker animation
         let moveBlocker = SKAction.move(to: CGPoint(x: -(newBlocker.position.x), y: -(newBlocker.position.y)), duration: 2)
         let removeBlocker = SKAction.removeFromParent()
         let flyAnimation = SKAction.sequence([moveBlocker, removeBlocker])
         newBlocker.run(flyAnimation)
-        
+        // add the new blocker to the active array and to the scene
+        activeBlockers.append(newBlocker)
         addChild(newBlocker)
     }
     
@@ -124,9 +140,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.name = "ball"
             ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2)
             ball.physicsBody?.isDynamic = false
-            ball.physicsBody!.contactTestBitMask = UInt32(2)
-            block.physicsBody?.collisionBitMask = UInt32(2)
-            
+            ball.physicsBody?.contactTestBitMask = NodeCategory.hoop.rawValue | NodeCategory.blocker.rawValue
+            ball.physicsBody?.categoryBitMask = NodeCategory.basketball.rawValue
             return ball
         } else{
             // reuse the balls from the inactive ball array
@@ -147,8 +162,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             block.name = "block"
             block.physicsBody = SKPhysicsBody(circleOfRadius: block.size.width / 2)
             block.physicsBody?.isDynamic = true
-            block.physicsBody!.contactTestBitMask = UInt32(2)
-            block.physicsBody?.collisionBitMask = UInt32(2)
+            block.physicsBody?.categoryBitMask = NodeCategory.blocker.rawValue
+            block.physicsBody?.contactTestBitMask = NodeCategory.basketball.rawValue
             return block
         } else{
             // reuse the blockers from the inactive blocker array
@@ -176,6 +191,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         print("Contact: \(bodyNameA), \(bodyNameB)")
+        
+        // check for contact between hoop and basketball
+        if contact.bodyA.categoryBitMask == NodeCategory.basketball.rawValue || contact.bodyB.categoryBitMask == NodeCategory.hoop.rawValue {
+            print("basketball made it to the hoop")
+            contact.bodyA.categoryBitMask == NodeCategory.basketball.rawValue ? contact.bodyA.node?.removeFromParent() : contact.bodyB.node?.removeFromParent()
+            
+            score += 1
+        }
     }
 
     
@@ -203,21 +226,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 collisionBetween(ball: contact.bodyB.node!, object: contact.bodyA.node!)
             }
       }
-    
-    // move the balls and check for collisions
-    func moveBalls(){
-        for ball in activeBalls{
-            ball.position.y += 1.0
-        }
-    }
-    
-    // move the enemies towards the center and check for collisions
-    func moveEnemies(){
-        for blocker in activeBlockers {
-            blocker.position.x += 1.0
-            blocker.position.y -= 1.0
-        }
-    }
     
     func touchDown(atPoint pos : CGPoint) {
         print("touch down")
