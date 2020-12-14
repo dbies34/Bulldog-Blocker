@@ -45,8 +45,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         hoop.physicsBody?.isDynamic = false
         hoop.physicsBody!.contactTestBitMask = UInt32(1)
 
-        scoreLabel.fontSize = 50
-        scoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 10)
+        scoreLabel.fontSize = 30
+        scoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 25)
         score = 0
         addChild(scoreLabel)
         
@@ -64,27 +64,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // runs when the scene is displayed
     override func didMove(to view: SKView) {
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        setup()
+        self.physicsWorld.contactDelegate = self
         startGame()
-        //addBall()
-        //addBlock()
-        //addBall()
-        // game loop
-//        run(SKAction.repeatForever(
-//            SKAction.sequence([
-//                SKAction.run(moveBalls),
-//                //SKAction.run(addBall),
-//                SKAction.run(moveEnemies),
-//                                SKAction.wait(forDuration: 0.01)])))
     }
     
     func startGame(){
+        setup()
         isPaused = false
         setupTimer()
     }
     
     func gameOver(){
-        
+        self.isPaused = true
+        timer?.invalidate()
+        timer = nil
+        // TODO: show game over screen with score, quit and restart button
     }
     
     // add a new ball to the scene
