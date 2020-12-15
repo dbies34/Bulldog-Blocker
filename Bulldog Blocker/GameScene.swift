@@ -8,6 +8,7 @@
 
 import SpriteKit
 import GameplayKit
+import UIKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
@@ -28,6 +29,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var score = 0 {
         didSet {
             scoreLabel.text = "Score: \(score)"
+            if (score >= 5) {
+                scoreLabel.fontName = "CopperPlate" //50, 168, 82
+                scoreLabel.fontColor = UIColor.red
+            }
+            let swishSound = SKAction.playSoundFileNamed("swoosh.mp3", waitForCompletion: false)
+            self.run(swishSound)
         }
     }
     
@@ -66,6 +73,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
         // add a score label to the scene
         scoreLabel.fontSize = 30
+        scoreLabel.fontName = "CopperPlate-Bold"
         scoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 25)
         score = 0
         addChild(scoreLabel)
