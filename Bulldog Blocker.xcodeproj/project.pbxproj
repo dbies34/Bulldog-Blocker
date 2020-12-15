@@ -11,6 +11,7 @@
 		9BE9D8B025884FDA00785B31 /* swoosh.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9BE9D8AF25884FDA00785B31 /* swoosh.mp3 */; };
 		9BE9D8B325885EC600785B31 /* MainMenu.sks in Resources */ = {isa = PBXBuildFile; fileRef = 9BE9D8B225885EC600785B31 /* MainMenu.sks */; };
 		9BE9D8B6258862A000785B31 /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BE9D8B5258862A000785B31 /* MainMenu.swift */; };
+		9BE9D8E52588BAD500785B31 /* buzzer.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9BE9D8E42588BAD500785B31 /* buzzer.mp3 */; };
 		AB36B2E425720D3D000C88BC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB36B2E325720D3D000C88BC /* AppDelegate.swift */; };
 		AB36B2E625720D3D000C88BC /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = AB36B2E525720D3D000C88BC /* GameScene.sks */; };
 		AB36B2E825720D3D000C88BC /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = AB36B2E725720D3D000C88BC /* Actions.sks */; };
@@ -27,6 +28,7 @@
 		9BE9D8AF25884FDA00785B31 /* swoosh.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = swoosh.mp3; sourceTree = "<group>"; };
 		9BE9D8B225885EC600785B31 /* MainMenu.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = MainMenu.sks; sourceTree = "<group>"; };
 		9BE9D8B5258862A000785B31 /* MainMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenu.swift; sourceTree = "<group>"; };
+		9BE9D8E42588BAD500785B31 /* buzzer.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = buzzer.mp3; sourceTree = "<group>"; };
 		AB36B2E025720D3D000C88BC /* Bulldog Blocker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Bulldog Blocker.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB36B2E325720D3D000C88BC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		AB36B2E525720D3D000C88BC /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -82,6 +84,7 @@
 				AB36B2F225720D40000C88BC /* Info.plist */,
 				9BE9D8AC25884FA700785B31 /* boomshakalaka.mp3 */,
 				9BE9D8AF25884FDA00785B31 /* swoosh.mp3 */,
+				9BE9D8E42588BAD500785B31 /* buzzer.mp3 */,
 				ABD112792588932000799FC6 /* GameOver.sks */,
 				ABD1127C2588934600799FC6 /* GameOver.swift */,
 			);
@@ -147,6 +150,7 @@
 			files = (
 				AB36B2EF25720D3D000C88BC /* Main.storyboard in Resources */,
 				ABD1127A2588932000799FC6 /* GameOver.sks in Resources */,
+				9BE9D8E52588BAD500785B31 /* buzzer.mp3 in Resources */,
 				AB36B2E625720D3D000C88BC /* GameScene.sks in Resources */,
 				AB36B2F125720D40000C88BC /* Assets.xcassets in Resources */,
 				9BE9D8B025884FDA00785B31 /* swoosh.mp3 in Resources */,

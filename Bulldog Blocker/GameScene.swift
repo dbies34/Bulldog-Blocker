@@ -23,8 +23,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         didSet {
             scoreLabel.text = "Score: \(score)"
             if (score >= 5) {
-                scoreLabel.fontName = "CopperPlate" //50, 168, 82
+                scoreLabel.fontName = "CopperPlate"
                 scoreLabel.fontColor = UIColor.red
+            }
+            if (score == 10) {
+                let boomSound = SKAction.playSoundFileNamed("boomshakalaka.mp3", waitForCompletion: false)
+                self.run(boomSound)
             }
             if score > 0 {
                 let swishSound = SKAction.playSoundFileNamed("swoosh.mp3", waitForCompletion: false)
@@ -43,7 +47,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             
             if timeLeft == 0 {
-                gameOver()
+                timer?.invalidate()
+                let buzzerSound = SKAction.playSoundFileNamed("buzzer.mp3", waitForCompletion: false)
+                self.run(buzzerSound)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    self.gameOver()
+                }
+                
             }
         }
     }
