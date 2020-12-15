@@ -11,13 +11,16 @@ import GameplayKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
+    // array for the balls
     var activeBalls: [SKSpriteNode] = [SKSpriteNode]()
-    var ball: SKSpriteNode = SKSpriteNode(imageNamed: "basketball")
     var inactiveBalls: [SKSpriteNode] = [SKSpriteNode]()
-    var block: SKSpriteNode = SKSpriteNode(imageNamed: "blocker")
+    
+    // array for the blockers
     var inactiveBlockers: [SKSpriteNode] = [SKSpriteNode]()
     var activeBlockers: [SKSpriteNode] = [SKSpriteNode]()
     
+    var ball = SKSpriteNode()
+    var block = SKSpriteNode()
     var background = SKSpriteNode()
     var hoop = SKSpriteNode()
     var scoreLabel = SKLabelNode()
@@ -41,36 +44,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func setup(){
         print("setup")
         physicsWorld.gravity = .zero
-        physicsWorld.contactDelegate = self
+        self.physicsWorld.contactDelegate = self
         
+        // add the hoop to the scene
         hoop = SKSpriteNode(imageNamed: "hoop")
+        hoop.name = "hoop"
         hoop.position = CGPoint(x: self.frame.midX, y: 205.0)
         hoop.size = CGSize(width: 75.0, height: 90.0)
-        hoop.physicsBody = SKPhysicsBody(rectangleOf: hoop.size)
+        hoop.physicsBody = SKPhysicsBody(circleOfRadius: 10)
         hoop.physicsBody?.isDynamic = false
         hoop.physicsBody?.categoryBitMask = NodeCategory.hoop.rawValue
         hoop.physicsBody?.contactTestBitMask = NodeCategory.basketball.rawValue
         addChild(hoop)
         
+        // add a background to the scene
         background = SKSpriteNode(imageNamed: "court")
         background.zRotation = CGFloat.pi / 2
         background.zPosition = -1
         background.size = CGSize(width: self.frame.height, height: self.frame.width)
         addChild(background)
 
+        // add a score label to the scene
         scoreLabel.fontSize = 30
         scoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 25)
         score = 0
         addChild(scoreLabel)
-        
-        
     }
     
     // setup the timer for which will spawn the balls and the blockers
     func setupTimer(){
         timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { (timer) in
             self.addBall()
-            self.addBlock()
+            //self.addBlock()
         })
     }
     
@@ -139,9 +144,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ball.size.width = 50.0
             ball.name = "ball"
             ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2)
-            ball.physicsBody?.isDynamic = false
-            ball.physicsBody?.contactTestBitMask = NodeCategory.hoop.rawValue | NodeCategory.blocker.rawValue
+            //ball.physicsBody?.isDynamic = false
             ball.physicsBody?.categoryBitMask = NodeCategory.basketball.rawValue
+            ball.physicsBody?.contactTestBitMask = NodeCategory.hoop.rawValue | NodeCategory.blocker.rawValue
             return ball
         } else{
             // reuse the balls from the inactive ball array
@@ -161,7 +166,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             block.size.width = 50.0
             block.name = "block"
             block.physicsBody = SKPhysicsBody(circleOfRadius: block.size.width / 2)
-            block.physicsBody?.isDynamic = true
+            //block.physicsBody?.isDynamic = true
             block.physicsBody?.categoryBitMask = NodeCategory.blocker.rawValue
             block.physicsBody?.contactTestBitMask = NodeCategory.basketball.rawValue
             return block
@@ -178,27 +183,35 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         let nodeA = contact.bodyA.node!
         let nodeB = contact.bodyB.node!
-        let bodyNameA = String(describing: nodeA.name)
-        let bodyNameB = String(describing: nodeB.name)
+//        let bodyNameA = String(describing: nodeA.name)
+//        let bodyNameB = String(describing: nodeB.name)
         if let alphaName = nodeA.name {
             if let bravoName = nodeB.name {
                 if alphaName == "block" && bravoName == "ball"{
                     nodeB.removeFromParent()
-                }
-                else if alphaName == "ball" && bravoName == "block" {
+                } else if alphaName == "ball" && bravoName == "block" {
                     nodeA.removeFromParent()
+                } else if alphaName == "hoop" && bravoName == "ball" {
+                    nodeB.removeFromParent()
+                    score += 1
+                } else if alphaName == "ball" && bravoName == "hoop" {
+                    nodeA.removeFromParent()
+                    score += 1
                 }
             }
         }
-        print("Contact: \(bodyNameA), \(bodyNameB)")
+        
+        
+        //print("Contact: \(contact.bodyA.node!.name), \(contact.bodyB.node!.name)")
         
         // check for contact between hoop and basketball
-        if contact.bodyA.categoryBitMask == NodeCategory.basketball.rawValue || contact.bodyB.categoryBitMask == NodeCategory.hoop.rawValue {
-            print("basketball made it to the hoop")
-            contact.bodyA.categoryBitMask == NodeCategory.basketball.rawValue ? contact.bodyA.node?.removeFromParent() : contact.bodyB.node?.removeFromParent()
-            
-            score += 1
-        }
+//        if contact.bodyA.categoryBitMask == NodeCategory.basketball.rawValue || contact.bodyB.categoryBitMask == NodeCategory.hoop.rawValue {
+//            print("basketball made it to the hoop")
+////            contact.bodyA.categoryBitMask == NodeCategory.basketball.rawValue ? contact.bodyA.node?.removeFromParent() : contact.bodyB.node?.removeFromParent()
+//            contact.bodyA.node?.removeFromParent()
+//
+//            score += 1
+//        }
     }
 
     
