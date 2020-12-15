@@ -74,8 +74,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // setup the timer for which will spawn the balls and the blockers
     func setupTimer(){
         timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { (timer) in
-            self.addBall()
-            //self.addBlock()
+            //self.addBall()
+            self.addBlock()
+            self.addRightBlock()
+            self.addBlock()
         })
     }
     
@@ -118,7 +120,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // add a new blocker to the scene
     func addBlock() {
-        let newBlocker = getBlocker()
+        let newBlocker = getBlocker(side: true)
         // TODO: make blocker postition random
         let minRandY = Int(self.frame.minY + 100)
         let maxRandY = Int(self.frame.maxY - 100)
@@ -126,7 +128,26 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         newBlocker.position.x = -250.0
         newBlocker.position.y = randY
         // create and run the blocker animation
-        let moveBlocker = SKAction.move(to: CGPoint(x: -(newBlocker.position.x), y: -(newBlocker.position.y)), duration: 2)
+        let moveBlocker = SKAction.move(to: CGPoint(x: self.frame.midX, y: (newBlocker.position.y)), duration: Double.random(in: 0.5...1.5))
+        let removeBlocker = SKAction.removeFromParent()
+        let flyAnimation = SKAction.sequence([moveBlocker, removeBlocker])
+        newBlocker.run(flyAnimation)
+        // add the new blocker to the active array and to the scene
+        activeBlockers.append(newBlocker)
+        addChild(newBlocker)
+    }
+    
+    // add a new right side blocker to the scene
+    func addRightBlock() {
+        let newBlocker = getBlocker(side: false)
+        // TODO: make blocker postition random
+        let minRandY = Int(self.frame.minY + 100)
+        let maxRandY = Int(self.frame.maxY - 100)
+        let randY = CGFloat(Int.random(in: minRandY...maxRandY))
+        newBlocker.position.x = self.frame.maxX + 100
+        newBlocker.position.y = randY
+        // create and run the blocker animation
+        let moveBlocker = SKAction.move(to: CGPoint(x: self.frame.midX, y: (newBlocker.position.y)), duration: Double.random(in: 0.5...1.5))
         let removeBlocker = SKAction.removeFromParent()
         let flyAnimation = SKAction.sequence([moveBlocker, removeBlocker])
         newBlocker.run(flyAnimation)
@@ -158,10 +179,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     //
-    func getBlocker() -> SKSpriteNode{
+    func getBlocker(side: Bool) -> SKSpriteNode{
         // if there is no ball to reuse, make a new one
         if inactiveBlockers.count == 0{
-            let block = SKSpriteNode(imageNamed: "blocker")
+            var block = SKSpriteNode()
+            // True is left, false is right
+            if (side){
+                block = SKSpriteNode(imageNamed: "blocker")
+            }
+            else {
+                block = SKSpriteNode(imageNamed: "rightSideBlocker")
+            }
             block.size.height = 50.0
             block.size.width = 50.0
             block.name = "block"
@@ -200,6 +228,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
+        activeBalls.removeAll()
         
         
         //print("Contact: \(contact.bodyA.node!.name), \(contact.bodyB.node!.name)")
@@ -254,7 +283,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-       
+        if self.isPaused == true {
+            // the user tapped to start a new game
+            startGame()
+        }
+        else if (activeBalls.count == 0){
+            addBall()
+        }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
