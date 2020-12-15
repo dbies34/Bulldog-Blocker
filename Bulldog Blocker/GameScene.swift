@@ -12,14 +12,6 @@ import UIKit
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    // array for the balls
-    var activeBalls: [SKSpriteNode] = [SKSpriteNode]()
-    var inactiveBalls: [SKSpriteNode] = [SKSpriteNode]()
-    
-    // array for the blockers
-    var inactiveBlockers: [SKSpriteNode] = [SKSpriteNode]()
-    var activeBlockers: [SKSpriteNode] = [SKSpriteNode]()
-    
     var ball = SKSpriteNode()
     var block = SKSpriteNode()
     var background = SKSpriteNode()
@@ -59,6 +51,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var timer: Timer? = nil
     
     var counter = 0
+    
+    var isBallActive = false
     
     
     enum NodeCategory: UInt32 {
@@ -141,6 +135,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // TODO: show game over screen with score, quit and restart button
     }
     
+    
+    
     // add a new ball to the scene
     func addBall(){
         // animate the ball to rise up the screen
@@ -154,7 +150,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         newBall.run(moveUp)
         newBall.run(rotateForever)
         
-        activeBalls.append(newBall)
         addChild(newBall)
     }
     
@@ -173,7 +168,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let flyAnimation = SKAction.sequence([moveBlocker, removeBlocker])
         newBlocker.run(flyAnimation)
         // add the new blocker to the active array and to the scene
-        activeBlockers.append(newBlocker)
         addChild(newBlocker)
     }
     
@@ -192,67 +186,49 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let flyAnimation = SKAction.sequence([moveBlocker, removeBlocker])
         newBlocker.run(flyAnimation)
         // add the new blocker to the active array and to the scene
-        activeBlockers.append(newBlocker)
         addChild(newBlocker)
     }
     
     //
     func getBall() -> SKSpriteNode{
-        // if there is no ball to reuse, make a new one
-        if inactiveBalls.count == 0{
-            let ball = SKSpriteNode(imageNamed: "basketball")
-            ball.size.height = 50.0
-            ball.size.width = 50.0
-            ball.name = "ball"
-            ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2)
-            //ball.physicsBody?.isDynamic = false
-            ball.physicsBody?.categoryBitMask = NodeCategory.basketball.rawValue
-            ball.physicsBody?.contactTestBitMask = NodeCategory.hoop.rawValue | NodeCategory.blocker.rawValue
-            return ball
-        } else{
-            // reuse the balls from the inactive ball array
-            if let ball = inactiveBalls.popLast(){
-                return ball
-            }
-        }
+        let ball = SKSpriteNode(imageNamed: "basketball")
+        ball.size.height = 50.0
+        ball.size.width = 50.0
+        ball.name = "ball"
+        ball.physicsBody = SKPhysicsBody(circleOfRadius: ball.size.width / 2)
+        //ball.physicsBody?.isDynamic = false
+        ball.physicsBody?.categoryBitMask = NodeCategory.basketball.rawValue
+        ball.physicsBody?.contactTestBitMask = NodeCategory.hoop.rawValue | NodeCategory.blocker.rawValue
         return ball
     }
     
     //
     func getBlocker(side: Bool) -> SKSpriteNode{
-        // if there is no ball to reuse, make a new one
-        if inactiveBlockers.count == 0{
-            var block = SKSpriteNode()
-            // True is left, false is right
-            if (side){
-                block = SKSpriteNode(imageNamed: "blocker")
-            }
-            else {
-                block = SKSpriteNode(imageNamed: "rightSideBlocker")
-            }
-            block.size.height = 50.0
-            block.size.width = 50.0
-            block.name = "block"
-            block.physicsBody = SKPhysicsBody(circleOfRadius: block.size.width / 2)
-            //block.physicsBody?.isDynamic = true
-            block.physicsBody?.categoryBitMask = NodeCategory.blocker.rawValue
-            block.physicsBody?.contactTestBitMask = NodeCategory.basketball.rawValue
-            return block
-        } else{
-            // reuse the blockers from the inactive blocker array
-            if let blocker = inactiveBlockers.popLast(){
-                return blocker
-            }
-            
+        var block = SKSpriteNode()
+        // True is left, false is right
+        if (side){
+            block = SKSpriteNode(imageNamed: "blocker")
         }
+        else {
+            block = SKSpriteNode(imageNamed: "rightSideBlocker")
+        }
+        block.size.height = 50.0
+        block.size.width = 50.0
+        block.name = "block"
+        block.physicsBody = SKPhysicsBody(circleOfRadius: block.size.width / 2)
+        //block.physicsBody?.isDynamic = true
+        block.physicsBody?.categoryBitMask = NodeCategory.blocker.rawValue
+        block.physicsBody?.contactTestBitMask = NodeCategory.basketball.rawValue
         return block
     }
     
     func didBegin(_ contact: SKPhysicsContact) {
-        let nodeA = contact.bodyA.node!
-        let nodeB = contact.bodyB.node!
-//        let bodyNameA = String(describing: nodeA.name)
-//        let bodyNameB = String(describing: nodeB.name)
+        
+        guard let nodeA = contact.bodyA.node, let nodeB = contact.bodyB.node else {
+            print("error getting nodes that collided")
+            return
+        }
+
         if let alphaName = nodeA.name {
             if let bravoName = nodeB.name {
                 if alphaName == "block" && bravoName == "ball"{
@@ -268,7 +244,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
             }
         }
-        activeBalls.removeAll()
+        isBallActive = false
     }
 
     
@@ -315,7 +291,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             // the user tapped to start a new game
             startGame()
         }
-        else if (activeBalls.count == 0){
+        else if (!isBallActive){
+            isBallActive = true
             addBall()
         }
     }
