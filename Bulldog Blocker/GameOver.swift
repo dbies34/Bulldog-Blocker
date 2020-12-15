@@ -1,8 +1,8 @@
 //
-//  MainMenu.swift
+//  GameOver.swift
 //  Bulldog Blocker
 //
-//  Created by Jackson  Ricks on 12/14/20.
+//  Created by Drew Bies on 12/14/20.
 //
 
 import Foundation
@@ -10,15 +10,19 @@ import SpriteKit
 import GameplayKit
 import UIKit
 
-class MainMenu: SKScene {
+class GameOver: SKScene {
     // runs when the scene is displayed
     var background = SKSpriteNode()
-    var title = SKSpriteNode()
-    var logo = SKSpriteNode()
-    var button = SKSpriteNode()
+    var title = SKLabelNode()
+    var scoreLabel = SKLabelNode()
+    var playLabel = SKLabelNode()
+    var exitLabel = SKLabelNode()
+    var playButton = SKSpriteNode()
+    var exitButton = SKSpriteNode()
+    
+    var scoreOptional: Int? = nil
         
     override func didMove(to view: SKView) {
-        
         
         isPaused = false
         background = SKSpriteNode(imageNamed: "mainmenu")
@@ -27,21 +31,43 @@ class MainMenu: SKScene {
         background.size = CGSize(width: self.frame.height, height: self.frame.width)
         addChild(background)
         
-        title = SKSpriteNode(imageNamed: "title")
-        title.size = CGSize(width: self.frame.width - 50, height: 100)
+        title.text = "Game Over!"
+        title.fontName = "CopperPlate"
+        title.fontSize = 100
         title.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 75)
         addChild(title)
         
-        logo = SKSpriteNode(imageNamed: "Bulldog")
-        logo.size = CGSize(width: 75, height: 75)
-        logo.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 175)
-        addChild(logo)
+        if let score = scoreOptional {
+            scoreLabel.text = "You scored \(score) points!"
+            scoreLabel.fontName = "CopperPlate"
+            scoreLabel.fontSize = 50
+            scoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.maxX - 100)
+            addChild(scoreLabel)
+        }
         
-        button = SKSpriteNode(imageNamed: "playButton")
-        button.size = CGSize(width: 75, height: 75)
-        button.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 300)
-        button.name = "button"
-        addChild(button)
+        
+        
+        playButton = SKSpriteNode(imageNamed: "blank_button")
+        playButton.size = CGSize(width: 440, height: 150)
+        playButton.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 300)
+        playButton.name = "playButton"
+        playLabel.fontName = "CopperPlate"
+        playLabel.fontSize = 70
+        playLabel.text = "Play Again?"
+        playLabel.zPosition = 1
+        playLabel.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 320)
+        addChild(playLabel)
+        addChild(playButton)
+        
+        exitButton = SKSpriteNode(imageNamed: "blank_button")
+        exitButton.size = CGSize(width: 440, height: 150)
+        exitButton.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 500)
+        exitButton.name = "playButton"
+        exitLabel.fontName = "CopperPlate"
+        exitLabel.fontSize = 55
+        exitLabel.position = exitButton.position
+        exitButton.addChild(exitLabel)
+        addChild(exitButton)
         
     }
     
@@ -52,7 +78,7 @@ class MainMenu: SKScene {
             let nodeArray = nodes(at: point)
             for node in nodeArray {
                 if let name = node.name {
-                    if name == "button" {
+                    if name == "playButton" {
                         guard let skView = self.view else {
                                 print("Could not get Skview")
                                 return
@@ -74,6 +100,9 @@ class MainMenu: SKScene {
 
                             /* 4) Start game scene */
                             skView.presentScene(scene)
+                    } else if name == "exitButton"{
+                        // exit the game
+                        exit(1)
                     }
                 }
             }

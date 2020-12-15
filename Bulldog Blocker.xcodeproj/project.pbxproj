@@ -18,6 +18,8 @@
 		AB36B2EC25720D3D000C88BC /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB36B2EB25720D3D000C88BC /* GameViewController.swift */; };
 		AB36B2EF25720D3D000C88BC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AB36B2ED25720D3D000C88BC /* Main.storyboard */; };
 		AB36B2F125720D40000C88BC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB36B2F025720D40000C88BC /* Assets.xcassets */; };
+		ABD1127A2588932000799FC6 /* GameOver.sks in Resources */ = {isa = PBXBuildFile; fileRef = ABD112792588932000799FC6 /* GameOver.sks */; };
+		ABD1127D2588934600799FC6 /* GameOver.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1127C2588934600799FC6 /* GameOver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		AB36B2EE25720D3D000C88BC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		AB36B2F025720D40000C88BC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AB36B2F225720D40000C88BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ABD112792588932000799FC6 /* GameOver.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameOver.sks; sourceTree = "<group>"; };
+		ABD1127C2588934600799FC6 /* GameOver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOver.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +82,8 @@
 				AB36B2F225720D40000C88BC /* Info.plist */,
 				9BE9D8AC25884FA700785B31 /* boomshakalaka.mp3 */,
 				9BE9D8AF25884FDA00785B31 /* swoosh.mp3 */,
+				ABD112792588932000799FC6 /* GameOver.sks */,
+				ABD1127C2588934600799FC6 /* GameOver.swift */,
 			);
 			path = "Bulldog Blocker";
 			sourceTree = "<group>";
@@ -140,6 +146,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB36B2EF25720D3D000C88BC /* Main.storyboard in Resources */,
+				ABD1127A2588932000799FC6 /* GameOver.sks in Resources */,
 				AB36B2E625720D3D000C88BC /* GameScene.sks in Resources */,
 				AB36B2F125720D40000C88BC /* Assets.xcassets in Resources */,
 				9BE9D8B025884FDA00785B31 /* swoosh.mp3 in Resources */,
@@ -159,6 +166,7 @@
 				AB36B2EA25720D3D000C88BC /* GameScene.swift in Sources */,
 				AB36B2EC25720D3D000C88BC /* GameViewController.swift in Sources */,
 				AB36B2E425720D3D000C88BC /* AppDelegate.swift in Sources */,
+				ABD1127D2588934600799FC6 /* GameOver.swift in Sources */,
 				9BE9D8B6258862A000785B31 /* MainMenu.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

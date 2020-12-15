@@ -97,7 +97,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         timeLabel.fontName = "CopperPlate-Bold"
         timeLabel.fontColor = .red
         timeLabel.position = CGPoint(x: self.frame.midX + 75, y: self.frame.maxY - 25)
-        timeLeft = 30
+        timeLeft = 2 // should be 30
         addChild(timeLabel)
     }
     
@@ -133,6 +133,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         timer?.invalidate()
         timer = nil
         // TODO: show game over screen with score, quit and restart button
+        
+        if let view = self.view as! SKView? {
+            if let scene = GameOver(fileNamed: "GameOver"){
+                scene.scaleMode = .aspectFit
+                view.presentScene(scene)
+            }
+        }
     }
     
     
