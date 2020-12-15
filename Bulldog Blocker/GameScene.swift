@@ -33,8 +33,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 scoreLabel.fontName = "CopperPlate" //50, 168, 82
                 scoreLabel.fontColor = UIColor.red
             }
-            let swishSound = SKAction.playSoundFileNamed("swoosh.mp3", waitForCompletion: false)
-            self.run(swishSound)
+            if score > 0 {
+                let swishSound = SKAction.playSoundFileNamed("swoosh.mp3", waitForCompletion: false)
+                            self.run(swishSound)
+            }
         }
     }
     
@@ -237,18 +239,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         activeBalls.removeAll()
-        
-        
-        //print("Contact: \(contact.bodyA.node!.name), \(contact.bodyB.node!.name)")
-        
-        // check for contact between hoop and basketball
-//        if contact.bodyA.categoryBitMask == NodeCategory.basketball.rawValue || contact.bodyB.categoryBitMask == NodeCategory.hoop.rawValue {
-//            print("basketball made it to the hoop")
-////            contact.bodyA.categoryBitMask == NodeCategory.basketball.rawValue ? contact.bodyA.node?.removeFromParent() : contact.bodyB.node?.removeFromParent()
-//            contact.bodyA.node?.removeFromParent()
-//
-//            score += 1
-//        }
     }
 
     
