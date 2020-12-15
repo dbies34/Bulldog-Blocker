@@ -25,6 +25,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var background = SKSpriteNode()
     var hoop = SKSpriteNode()
     var scoreLabel = SKLabelNode()
+    var timeLabel = SKLabelNode()
     
     var score = 0 {
         didSet {
@@ -35,12 +36,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
             if score > 0 {
                 let swishSound = SKAction.playSoundFileNamed("swoosh.mp3", waitForCompletion: false)
-                            self.run(swishSound)
+                self.run(swishSound)
+            }
+        }
+    }
+    
+    var timeLeft = 30 {
+        didSet{
+            timeLabel.text = "Time: \(timeLeft)"
+            if timeLeft < 11 && timeLabel.fontColor == .red {
+                timeLabel.fontColor = .white
+            } else {
+                timeLabel.fontColor = .red
+            }
+            
+            if timeLeft == 0 {
+                gameOver()
             }
         }
     }
     
     var timer: Timer? = nil
+    
+    var counter = 0
     
     
     enum NodeCategory: UInt32 {
@@ -76,18 +94,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // add a score label to the scene
         scoreLabel.fontSize = 30
         scoreLabel.fontName = "CopperPlate-Bold"
-        scoreLabel.position = CGPoint(x: self.frame.midX, y: self.frame.maxY - 25)
+        scoreLabel.position = CGPoint(x: self.frame.midX - 75, y: self.frame.maxY - 25)
         score = 0
         addChild(scoreLabel)
+        
+        // add label for time remaining
+        timeLabel.fontSize = 30
+        timeLabel.fontName = "CopperPlate-Bold"
+        timeLabel.fontColor = .red
+        timeLabel.position = CGPoint(x: self.frame.midX + 75, y: self.frame.maxY - 25)
+        timeLeft = 30
+        addChild(timeLabel)
     }
     
     // setup the timer for which will spawn the balls and the blockers
     func setupTimer(){
-        timer = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { (timer) in
-            //self.addBall()
-            self.addBlock()
-            self.addRightBlock()
-            self.addBlock()
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { (timer) in
+            self.counter += 1
+            if self.counter == 2 {
+                self.addBlock()
+                self.addRightBlock()
+                self.addBlock()
+            }
+            self.timeLeft -= 1
+            self.counter %= 2
         })
     }
     
