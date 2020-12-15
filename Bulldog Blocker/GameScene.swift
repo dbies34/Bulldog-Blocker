@@ -134,8 +134,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         timer = nil
         // TODO: show game over screen with score, quit and restart button
         
-        if let view = self.view as! SKView? {
+        if let view = self.view as? SKView {
             if let scene = GameOver(fileNamed: "GameOver"){
+                scene.scoreOptional = score
                 scene.scaleMode = .aspectFit
                 view.presentScene(scene)
             }
