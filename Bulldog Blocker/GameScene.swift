@@ -107,7 +107,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         timeLabel.fontName = "CopperPlate-Bold"
         timeLabel.fontColor = .red
         timeLabel.position = CGPoint(x: self.frame.midX + 75, y: self.frame.maxY - 25)
-        timeLeft = 2 // should be 30
+        timeLeft = 30 // should be 30
         addChild(timeLabel)
     }
     
